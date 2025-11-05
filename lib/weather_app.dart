@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather/presentation/bloc/auth_cubit/auth_cubit.dart';
 import 'package:weather/presentation/bloc/weather_cubit/weather_cubit.dart';
 import 'package:weather/presentation/screen/auth_screen.dart';
 import 'package:weather/presentation/screen/home_page.dart';
@@ -15,8 +16,11 @@ class WeatherApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
       ),
-      home: BlocProvider(
-        create: (context) => WeatherCubit(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<WeatherCubit>(create: (context) => WeatherCubit()),
+          BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        ],
         child: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {

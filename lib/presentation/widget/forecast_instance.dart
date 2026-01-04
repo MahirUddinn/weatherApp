@@ -85,7 +85,7 @@ class ForecastInstance extends StatelessWidget {
           Icon(
             _getWeatherIcon(forecast.weather.first.icon),
             size: 30,
-            color: Colors.grey,
+            color: Colors.yellow.shade100,
           ),
           SizedBox(height: 10),
           Text(_getForecastTemp(forecast.main.temp)),

@@ -55,7 +55,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
     return LineChartBarData(
       spots: spots,
       isCurved: true,
-      color: Colors.red,
+      color: Colors.yellow.shade900,
       barWidth: 3,
       dotData: FlDotData(show: true),
       belowBarData: BarAreaData(show: false),

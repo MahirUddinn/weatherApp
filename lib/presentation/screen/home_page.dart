@@ -42,43 +42,6 @@ class _HomePageState extends State<HomePage> {
     ]);
   }
 
-  IconData _getWeatherIcon(String iconCode) {
-    switch (iconCode) {
-      case '01d':
-        return Icons.wb_sunny;
-      case '01n':
-        return Icons.nightlight_round;
-      case '02d':
-        return Icons.cloud_queue;
-      case '02n':
-        return Icons.cloud;
-      case '03d':
-      case '03n':
-        return Icons.cloud;
-      case '04d':
-      case '04n':
-        return Icons.cloudy_snowing;
-      case '09d':
-      case '09n':
-        return Icons.grain;
-      case '10d':
-        return Icons.umbrella;
-      case '10n':
-        return Icons.umbrella_outlined;
-      case '11d':
-      case '11n':
-        return Icons.flash_on;
-      case '13d':
-      case '13n':
-        return Icons.ac_unit;
-      case '50d':
-      case '50n':
-        return Icons.foggy;
-      default:
-        return Icons.help_outline;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -96,15 +59,30 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+      extendBodyBehindAppBar: true,
       appBar: _buildAppBar(),
-      body: RefreshIndicator(
-        onRefresh: onRefresh,
-        child: ListView(
-          children: [
-            _buildCurrentConditions(),
-            _buildForecast()
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey, Colors.grey.shade500],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: onRefresh,
+            color: Colors.indigo,
+            backgroundColor: Colors.white,
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _buildCurrentConditions(),
+                SizedBox(height: 16),
+                _buildForecast()
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -114,7 +92,8 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<WeatherCubit, WeatherState>(
       builder: (context, state) {
         if (state.status == WeatherStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: CircularProgressIndicator(color: Colors.white));
         }
         if (state.status == WeatherStatus.loaded &&
             state.forecastData.isNotEmpty) {
@@ -123,22 +102,23 @@ class _HomePageState extends State<HomePage> {
           final double totalWidth = forecastList.length * itemWidth;
           return Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(5),
-            color: Colors.white,
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    "Weather Forecast",
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                Text(
+                  "7-Day Forecast",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
+                SizedBox(height: 16),
                 SingleChildScrollView(
                   controller: scrollController,
                   scrollDirection: Axis.horizontal,
@@ -151,10 +131,10 @@ class _HomePageState extends State<HomePage> {
                           children: forecastList
                               .map(
                                 (f) => SizedBox(
-                              width: itemWidth,
-                              child: ForecastInstance(forecast: f),
-                            ),
-                          )
+                                  width: itemWidth,
+                                  child: ForecastInstance(forecast: f),
+                                ),
+                              )
                               .toList(),
                         ),
                         SizedBox(
@@ -166,15 +146,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 5),
-                const Divider(),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  child: const Center(
+                const SizedBox(height: 16),
+                const Divider(color: Colors.white24),
+                Center(
+                  child: TextButton(
+                    onPressed: () {},
                     child: Text(
-                      "MORE",
+                      "MORE DETAILS",
                       style: TextStyle(
-                        color: Colors.blueAccent,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -184,9 +164,12 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         } else if (state.status == WeatherStatus.error) {
-          return const Center(child: Text("Failed to load forecast"));
+          return const Center(
+              child: Text("Failed to load forecast",
+                  style: TextStyle(color: Colors.white)));
         } else {
-          return const Center(child: Text("No data"));
+          return const Center(
+              child: Text("No data", style: TextStyle(color: Colors.white)));
         }
       },
     );
@@ -194,41 +177,57 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCurrentConditions() {
     return Container(
-      color: Colors.white,
-      margin: const EdgeInsets.all(5),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "CURRENT CONDITIONS",
+            "Current Conditions",
             style: TextStyle(
-              color: Colors.grey[700],
+              color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 18,
             ),
           ),
           const SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildTempChart(),
-              const Expanded(
-                child: Column(children: [Text("Precipitation"), Text("Wind")]),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _weatherStat("Precipitation", "0%", Icons.water_drop),
+                    SizedBox(height: 10),
+                    _weatherStat("Wind", "12 km/h", Icons.air),
+                  ],
+                ),
               ),
             ],
           ),
-          const Divider(),
-          const Text(
-            "Today's temperature is forecast to be COOLER than yesterday",
-          ),
-          const Divider(),
-          const Center(
+          const Divider(color: Colors.white24),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
-              "MORE",
-              style: TextStyle(
-                color: Colors.blueAccent,
-                fontWeight: FontWeight.bold,
+              "Today's temperature is forecast to be COOLER than yesterday",
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          const Divider(color: Colors.white24),
+          Center(
+            child: TextButton(
+              onPressed: () {},
+              child: Text(
+                "MORE DETAILS",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -237,30 +236,63 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _weatherStat(String label, String value, IconData icon) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white70, size: 20),
+        SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(color: Colors.white70, fontSize: 12)),
+            Text(value,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16)),
+          ],
+        ),
+      ],
+    );
+  }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       title: BlocBuilder<WeatherCubit, WeatherState>(
         builder: (context, state) {
           if (state.status == WeatherStatus.loading) {
-            return const Text("Loading...");
+            return const Text("Loading...", style: TextStyle(color: Colors.white));
           } else if (state.status == WeatherStatus.loaded &&
               state.weatherData.isNotEmpty) {
-            return Text(
-              "Hello $username, you are in ${state.weatherData.first.name}",
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Hello, $username",
+                  style: TextStyle(fontSize: 14, color: Colors.white70),
+                ),
+                Text(
+                  state.weatherData.first.name,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ],
             );
-          } else if (state.status == WeatherStatus.error) {
-            return const Text("Error loading weather");
           } else {
-            return const Text("Weather App");
+            return const Text("Weather App", style: TextStyle(color: Colors.white));
           }
         },
       ),
       actions: [
         IconButton(
           onPressed: () => FirebaseAuth.instance.signOut(),
-          icon: const Icon(Icons.logout),
+          icon: const Icon(Icons.logout, color: Colors.white),
         ),
       ],
     );
@@ -268,64 +300,54 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildTempChart() {
     return SizedBox(
-      height: 250,
-      width: 250,
+      height: 150,
+      width: 150,
       child: SfRadialGauge(
         axes: <RadialAxis>[
           RadialAxis(
             minimum: 0,
             maximum: 120,
             showTicks: false,
+            showLabels: false,
+            axisLineStyle: AxisLineStyle(
+              thickness: 20,
+              cornerStyle: CornerStyle.bothCurve,
+              color: Colors.white24,
+            ),
             ranges: <GaugeRange>[
               GaugeRange(
                 startValue: 0,
-                endValue: 10,
-                color: Colors.grey,
-                startWidth: 10,
-                endWidth: 10,
-              ),
-              GaugeRange(
-                startValue: 10,
-                endValue: 40,
-                color: Colors.purple,
-                startWidth: 10,
-                endWidth: 10,
-              ),
-              GaugeRange(
-                startValue: 40,
-                endValue: 60,
-                color: Colors.blue,
-                startWidth: 10,
-                endWidth: 10,
-              ),
-              GaugeRange(
-                startValue: 60,
-                endValue: 70,
-                color: Colors.green,
-                startWidth: 10,
-                endWidth: 10,
-              ),
-              GaugeRange(
-                startValue: 70,
-                endValue: 90,
-                color: Colors.orange,
-                startWidth: 10,
-                endWidth: 10,
-              ),
-              GaugeRange(
-                startValue: 90,
                 endValue: 120,
-                color: Colors.red,
-                startWidth: 10,
-                endWidth: 10,
+                gradient: SweepGradient(
+                  colors: [Colors.blue.shade300, Colors.orange.shade300],
+                ),
+                startWidth: 20,
+                endWidth: 20,
               ),
             ],
             pointers: const <GaugePointer>[
-              WidgetPointer(value: 83, child: Icon(Icons.cloud, size: 30)),
+              MarkerPointer(
+                value: 83,
+                markerType: MarkerType.circle,
+                color: Colors.white,
+                markerHeight: 20,
+                markerWidth: 20,
+              )
             ],
             annotations: const <GaugeAnnotation>[
               GaugeAnnotation(
-                widget: Text('83°', style: TextStyle(fontSize: 40)),
+                widget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('83°',
+                        style: TextStyle(
+                            fontSize: 32,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
+                    Text('Sunny',
+                        style: TextStyle(fontSize: 14, color: Colors.white70)),
+                  ],
+                ),
               ),
             ],
           ),

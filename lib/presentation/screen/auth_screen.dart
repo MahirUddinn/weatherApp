@@ -16,28 +16,47 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(
-                  top: 30,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.lightBlueAccent, Colors.grey.shade500],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                  ),
+                  width: 150,
+                  child: Image.asset("asset/image/sun.png"),
                 ),
-                width: 300,
-                child: Image.asset("asset/image/sun.png"),
-              ),
-              BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  return Card(
-                    margin: EdgeInsets.all(20),
-                    child: SingleChildScrollView(
+                Text(
+                  "Welcome Back",
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                SizedBox(height: 30),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return Card(
+                      elevation: 8,
+                      margin: EdgeInsets.all(20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      color: Colors.white.withOpacity(0.9),
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(24),
                         child: Form(
                           key: _form,
                           child: Column(
@@ -45,7 +64,11 @@ class _AuthScreenState extends State<AuthScreen> {
                             children: [
                               TextFormField(
                                 decoration: InputDecoration(
-                                  label: Text("Email Address"),
+                                  labelText: "Email Address",
+                                  prefixIcon: Icon(Icons.email_outlined),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                                 autocorrect: false,
@@ -56,17 +79,21 @@ class _AuthScreenState extends State<AuthScreen> {
                                       value.trim().isEmpty) {
                                     return "Enter valid email";
                                   }
-
                                   return null;
                                 },
                                 onSaved: (value) {
                                   state.enteredEmail = value!;
                                 },
                               ),
-                              if (!state.isLogin)
+                              SizedBox(height: 16),
+                              if (!state.isLogin) ...[
                                 TextFormField(
                                   decoration: InputDecoration(
-                                    label: Text("Username"),
+                                    labelText: "Username",
+                                    prefixIcon: Icon(Icons.person_outline),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                   validator: (value) {
                                     if (value == null ||
@@ -74,22 +101,27 @@ class _AuthScreenState extends State<AuthScreen> {
                                         value.trim().length < 3) {
                                       return "Enter valid username";
                                     }
-
                                     return null;
                                   },
                                   onSaved: (value) {
                                     state.enteredUsername = value!;
                                   },
                                 ),
+                                SizedBox(height: 16),
+                              ],
                               TextFormField(
                                 decoration: InputDecoration(
-                                  label: Text("Password"),
+                                  labelText: "Password",
+                                  prefixIcon: Icon(Icons.lock_outline),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 obscureText: true,
                                 validator: (value) {
                                   if (value == null ||
                                       value.trim().length < 8) {
-                                    return "Enter valid password";
+                                    return "Enter valid password (min 8 chars)";
                                   }
                                   return null;
                                 },
@@ -97,17 +129,31 @@ class _AuthScreenState extends State<AuthScreen> {
                                   state.enteredPassword = value!;
                                 },
                               ),
-                              SizedBox(height: 12),
+                              SizedBox(height: 24),
                               if (!state.isAuthenticating)
                                 ElevatedButton(
                                   onPressed: () {
                                     context.read<AuthCubit>().submit(
-                                      context,
-                                      _form,
-                                    );
+                                          context,
+                                          _form,
+                                        );
                                   },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    minimumSize: Size(double.infinity, 50),
+                                  ),
                                   child: Text(
                                     state.isLogin ? "Login" : "Sign Up",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               if (!state.isAuthenticating)
@@ -127,11 +173,11 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

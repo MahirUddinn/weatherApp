@@ -12,9 +12,9 @@ A modern, beautiful weather application built with Flutter. This app provides re
 
 ## Screenshots 📱
 
-| Statistics | Forecast | Home |
+| Registration | Login | Home |
 |:---:|:---:|:---:|
-| ![Stats](asset/screenshot/img_1.png) | ![Forecast](asset/screenshot/img_2.png) | ![Home](asset/screenshot/img_3.png) |
+| ![Registration](asset/screenshot/img_1.png) | ![Login](asset/screenshot/img_2.png) | ![Home](asset/screenshot/img_3.png) |
 
 ## Tech Stack 🛠️
 
